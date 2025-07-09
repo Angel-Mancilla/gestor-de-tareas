@@ -51,18 +51,23 @@ class AuthController extends Controller
                 'message' => 'No se pudo iniciar sesion, sus credenciales son invalidas'
             ],401);
         }
-        $user = Auth::user();
-        $tokenUser = $user->createToken($requestValidated['device'])->plainTextToken;
+
+        $request->session()->regenerate();
+        // $user = Auth::user();
+        // $tokenUser = $user->createToken($requestValidated['device'])->plainTextToken;
         return response()->json([
             'status' => 'Authorized',
             'message' => 'Se ha iniciado sesion de forma exitosa',
-            'token' => $tokenUser
+            // 'token' => $tokenUser
         ],200);
     }
 
     public function logout(Request $request)
     {
-        $request->user()->currentAccessToken()->delete();
+        Auth::guard('web')->logout();
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+        // $request->user()->currentAccessToken()->delete();
         return response()->json([
             'message' => 'Se ha cerrado la sesion correctamente'
          ],200);
