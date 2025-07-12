@@ -64,12 +64,19 @@ class AuthController extends Controller
 
     public function logout(Request $request)
     {
-        Auth::guard('web')->logout();
-        $request->session()->invalidate();
-        $request->session()->regenerateToken();
+        try {
+            Auth::guard('web')->logout();
+            $request->session()->invalidate();
+            $request->session()->regenerateToken();
         // $request->user()->currentAccessToken()->delete();
-        return response()->json([
+            return response()->json([
             'message' => 'Se ha cerrado la sesion correctamente'
-         ],200);
+            ],200);
+        } catch (\Throwable $th) {
+            return response()->json([
+             'message' => 'Ha ocurrido un error inesperado '+ $th->getMessage()
+            ],500);
+        }
+        
     }
 }
